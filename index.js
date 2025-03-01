@@ -26,7 +26,10 @@ let persons = [
 ]
 
 app.use(express.json())
-app.use(morgan('tiny'))
+morgan.token('body', (req) => JSON.stringify(req.body)); // Convert body to a string
+
+// Use Morgan middleware for logging, including the request body for POST requests
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 const generateId = () => {
     // Generate a random number between 1000000000 and 9999999999 (a 10-digit number)
