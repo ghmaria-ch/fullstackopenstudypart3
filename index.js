@@ -24,6 +24,42 @@ let persons = [
     }
 ]
 
+app.use(express.json())
+
+const generateId = () => {
+    // Generate a random number between 1000000000 and 9999999999 (a 10-digit number)
+    const randomId = Math.floor(Math.random() * 9000000000) + 1000000000;
+    
+    return String(randomId);
+  }
+  
+
+  app.post('/api/persons', (request, response) => {
+    const body = request.body
+  
+    if (!body.name) {
+      return response.status(400).json({ 
+        error: 'name missing' 
+      })
+    }
+
+    if (!body.number) {
+        return response.status(400).json({ 
+          error: 'number missing' 
+        })
+      }
+  
+    const person = {
+      name: body.name,
+      number: body.number,
+      id: generateId(),
+    }
+  
+    persons = persons.concat(person)
+  
+    response.json(person)
+  })
+
 app.get('/api/persons', (request, response) => {
     response.json(persons)
   })
