@@ -1,12 +1,14 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
+
 const app = express()
 
 let persons = [
     { 
-      "id": "1",
-      "name": "Arto Hellas", 
-      "number": "040-123456"
+        "id": "1",
+        "name": "Arto Hellas", 
+        "number": "040-123456"
     },
     { 
       "id": "2",
@@ -19,13 +21,15 @@ let persons = [
       "number": "12-43-234345"
     },
     { 
-      "id": "4",
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
+        "id": "4",
+        "name": "Mary Poppendieck", 
+        "number": "39-23-6423122"
     }
 ]
 
+app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 morgan.token('body', (req) => JSON.stringify(req.body)); // Convert body to a string
 
 // Use Morgan middleware for logging, including the request body for POST requests
@@ -101,7 +105,7 @@ app.get("/info", (request, response) => {
   })
   
   
-  const PORT = 3001
+  const PORT = process.env.PORT || 3001
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
