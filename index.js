@@ -59,10 +59,10 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
         });
     }
       
-    const person = {
+    const person = new Person({
       name: body.name,
       number: body.number,
-    }
+    });
 
     person.save().then(savedPerson => {
       response.json(savedPerson)
