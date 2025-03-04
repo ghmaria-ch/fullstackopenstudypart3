@@ -1,6 +1,8 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
 const app = express()
 
@@ -35,14 +37,6 @@ morgan.token('body', (req) => JSON.stringify(req.body)); // Convert body to a st
 // Use Morgan middleware for logging, including the request body for POST requests
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
-const generateId = () => {
-    // Generate a random number between 1000000000 and 9999999999 (a 10-digit number)
-    const randomId = Math.floor(Math.random() * 9000000000) + 1000000000;
-    
-    return String(randomId);
-  }
-  
-
   app.post('/api/persons', (request, response) => {
     const body = request.body
   
@@ -68,17 +62,18 @@ const generateId = () => {
     const person = {
       name: body.name,
       number: body.number,
-      id: generateId(),
     }
-  
-    persons = persons.concat(person)
-  
-    response.json(person)
+
+    person.save().then(savedPerson => {
+      response.json(savedPerson)
+    })  
   })
 
 app.get('/api/persons', (request, response) => {
+  Person.find({}).then(persons => {
     response.json(persons)
   })
+})  
 
 app.get("/info", (request, response) => {
     const currentDate = new Date();
@@ -89,13 +84,9 @@ app.get("/info", (request, response) => {
   });
 
   app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id === id)
-    if (person) {
-        response.json(person)
-      } else {
-        response.status(404).end()
-      }
+    Person.findById(request.params.id).then(person => {
+      response.json(person)
+    })
   })
 
   app.delete('/api/persons/:id', (request, response) => {
@@ -105,7 +96,7 @@ app.get("/info", (request, response) => {
   })
   
   
-  const PORT = process.env.PORT || 3001
+  const PORT = process.env.PORT
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
   })
